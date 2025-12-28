@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sebastian's NFL Playoff Bracket Generator</title>
+
+<style>
+  body { font-family: Arial, sans-serif; margin: 16px; max-width: 1000px; }
+  h1 { margin: 0 0 6px; }
+  .note { color:#555; font-size:14px; margin-bottom:10px; }
+  label { font-weight:700; display:block; margin-top:8px; }
+  input { padding:10px; width:100%; max-width:340px; font-size:16px; margin-top:4px; }
+
+  .grid { display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:16px; }
+  .conf { border:1px solid #ddd; border-radius:10px; padding:12px; }
+  .round-title { margin: 12px 0 6px; }
+
+  .match { border:1px solid #eee; border-radius:10px; padding:8px; margin: 10px 0; }
+  .team { padding:10px; border:1px solid #ccc; border-radius:8px; margin:4px 0; cursor:pointer; font-size:16px; user-select:none; }
+  .team:hover { background:#f6f6f6; }
+  .picked { background:#111; color:#fff; border-color:#111; font-weight:700; }
+  .muted { opacity:.5; cursor:default; }
+
+  .actions { margin-top:16px; display:flex; gap:10px; flex-wrap:wrap; }
+  button { padding:12px 14px; border-radius:10px; border:1px solid #111; background:#111; color:#fff; font-size:16px; cursor:pointer; }
+  button.secondary { background:#fff; color:#111; }
+
+  textarea { width:100%; min-height:170px; margin-top:10px; padding:10px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size:13px; }
+
+  @media (max-width:800px){ .grid { grid-template-columns:1fr; } }
+
+  .at {
+    text-align: center;
+    font-weight: 700;
+    color: #666;
+    margin: 6px 0;
+    user-select: none;
+  }
+
+  .team.home {
+    border-left: 6px solid #0a7;
+    padding-left: 10px;
+  }
+
+</style>
+</head>
+
+<body>
+  <h1>NFL Playoff Bracket Picks</h1>
+  <div class="note">Tap a team to advance them. Seeding rules are enforced automatically (1 seed bye, 1 plays lowest remaining).</div>
+
+<div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:10px;">
+  <div>
+    <label>Scoreboard name</label>
+    <input id="scoreboardName" placeholder="Name shown on scoreboard" autocomplete="nickname">
+  </div>
+
+  <div>
+    <label>Real name</label>
+    <input id="realName" placeholder="Your real name" autocomplete="name">
+  </div>
+
+  <div>
+    <label>Email</label>
+    <input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+  </div>
+
+  <div>
+    <label>Phone</label>
+    <input id="phone" type="tel" placeholder="(555) 555-5555" autocomplete="tel">
+  </div>
+</div>
+
+  <div class="grid">
+    <div class="conf" id="afc"></div>
+    <div class="conf" id="nfc"></div>
+  </div>
+
+  <div class="conf" id="superBowl" style="margin-top:16px;"></div>
+
+  <div class="actions">
+    <button id="submitBtn">Submit Picks</button>
+    <button class="secondary" id="csvBtn">Download CSV</button>
+    <button class="secondary" id="resetBtn">Reset</button>
+  </div>
+
+  <textarea id="output" placeholder="Preview / backup text will show here"></textarea>
+
+<script>
+// ========================
+// CONFIG
+// ========================
+
+// Replace team names once bracket is set
+const initial = {
+  afc: { name:"AFC", seeds:{
+    1:"AFC 1 Seed", 2:"AFC 2 Seed", 3:"AFC 3 Seed", 4:"AFC 4 Seed",
+    5:"AFC 5 Seed", 6:"AFC 6 Seed", 7:"AFC 7 Seed"
+  }},
+  nfc: { name:"NFC", seeds:{
+    1:"NFC 1 Seed", 2:"NFC 2 Seed", 3:"NFC 3 Seed", 4:"NFC 4 Seed",
+    5:"NFC 5 Seed", 6:"NFC 6 Seed", 7:"NFC 7 Seed"
+  }}
+};
+
+// Paste your Google Apps Script Web App URL here (optional)
+// If you leave it blank, "Submit Picks" will just generate preview text.
+const BACKEND_URL = "https://script.google.com/macros/s/AKfycbw-4HuF7y0LiCyEHbRyTLnuKdmTaktl8YDM90vAp8vyx9eOZ9rtiy1w1W4aoq3j17hw/exec";
+
+// ========================
+// STATE + BRACKET LOGIC
+// ========================
+function makeConf(conf){
+  const s = conf.seeds;
+  return {
+    name: conf.name,
+    wc: [
+      {a:{seed:2,name:s[2]}, b:{seed:7,name:s[7]}, w:null},
+      {a:{seed:3,name:s[3]}, b:{seed:6,name:s[6]}, w:null},
+      {a:{seed:4,name:s[4]}, b:{seed:5,name:s[5]}, w:null},
+    ],
+    div: [
+      {a:{seed:1,name:s[1]}, b:null, w:null},
+      {a:null, b:null, w:null}
+    ],
+    conf: {a:null, b:null, w:null}
+  };
+}
+
+let state = {
+  afc: makeConf(initial.afc),
+  nfc: makeConf(initial.nfc),
+  sb: {a:null, b:null, w:null}
+};
+
+function sortBySeedAsc(arr){ return arr.slice().sort((x,y)=>x.seed-y.seed); }
+
+function recomputeConference(conf){
+  const wcWinners = conf.wc.map(m=>m.w).filter(Boolean);
+
+  // If WC not complete, clear downstream
+  if (wcWinners.length < 3){
+    conf.div[0].b = null; conf.div[0].w = null;
+    conf.div[1].a = null; conf.div[1].b = null; conf.div[1].w = null;
+    conf.conf.a = null; conf.conf.b = null; conf.conf.w = null;
+    return;
+  }
+
+  // Remaining teams: 1 seed + WC winners
+  const remaining = [{seed:1, name:conf.div[0].a.name}, ...wcWinners];
+  const sorted = sortBySeedAsc(remaining);
+
+  // 1 plays lowest remaining (highest seed #)
+  const lowest = sorted[sorted.length - 1];
+  const others = sorted.slice(0, sorted.length - 1).filter(t => t.seed !== 1); // two teams
+
+  conf.div[0].b = lowest;
+  conf.div[1].a = others[0];
+  conf.div[1].b = others[1];
+
+  // Validate divisional winners
+  conf.div.forEach(m=>{
+    if (!m.a || !m.b) m.w = null;
+    else if (m.w && ![m.a.seed, m.b.seed].includes(m.w.seed)) m.w = null;
+  });
+
+  // Conf champ from div winners
+  const divWinners = conf.div.map(m=>m.w).filter(Boolean);
+  if (divWinners.length < 2){
+    conf.conf.a = null; conf.conf.b = null; conf.conf.w = null;
+    return;
+  }
+
+  conf.conf.a = divWinners[0];
+  conf.conf.b = divWinners[1];
+  if (conf.conf.w && ![conf.conf.a.seed, conf.conf.b.seed].includes(conf.conf.w.seed)) conf.conf.w = null;
+}
+
+function recomputeAll(){
+  recomputeConference(state.afc);
+  recomputeConference(state.nfc);
+
+  const a = state.afc.conf.w;
+  const n = state.nfc.conf.w;
+
+  if (!a || !n){
+    state.sb.a = null; state.sb.b = null; state.sb.w = null;
+    return;
+  }
+
+  state.sb.a = { seed: a.seed, name: a.name, conf: "AFC" };
+  state.sb.b = { seed: n.seed, name: n.name, conf: "NFC" };
+
+  if (state.sb.w && ![state.sb.a.name, state.sb.b.name].includes(state.sb.w.name)) state.sb.w = null;
+}
+
+// ========================
+// RENDER HELPERS (NO innerHTML AFTER APPENDS)
+// ========================
+function clear(el){ while(el.firstChild) el.removeChild(el.firstChild); }
+
+function el(tag, props={}, children=[]){
+  const node = document.createElement(tag);
+  Object.assign(node, props);
+  for (const c of children) node.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+  return node;
+}
+
+function teamNode(team, isPicked, onPick, extraClass = ""){
+  const d = el("div", { className: "team" + (isPicked ? " picked" : "") + (extraClass ? " " + extraClass : "") });
+  d.textContent = team ? `(${team.seed}) ${team.name}` : "—";
+  if (!team || !onPick){
+    d.classList.add("muted");
+  } else {
+    d.addEventListener("click", onPick);
+  }
+  return d;
+}
+
+function matchNode(teamA, teamB, winner, pickA, pickB){
+  const box = el("div", { className: "match" });
+
+  // Home team = higher seed (lower seed number). Display home second.
+  let away = teamA;
+  let home = teamB;
+  let pickAway = pickA;
+  let pickHome = pickB;
+
+  if (teamA && teamB && teamA.seed < teamB.seed) {
+    // teamA is home, so swap
+    away = teamB;
+    home = teamA;
+    pickAway = pickB;
+    pickHome = pickA;
+  }
+
+  box.appendChild(teamNode(
+    away,
+    !!(winner && away && winner.seed === away.seed),
+    pickAway
+  ));
+
+  // "@"
+  box.appendChild(el("div", { className: "at" }, ["@"]));
+
+  box.appendChild(teamNode(
+    home,
+    !!(winner && home && winner.seed === home.seed),
+    pickHome,
+    "home"
+  ));
+
+  return box;
+}
+
+function renderConference(conf, mount){
+  clear(mount);
+
+  mount.appendChild(el("h2", {}, [conf.name]));
+
+  // Wild Card
+  mount.appendChild(el("h3", { className:"round-title" }, ["Wild Card"]));
+  conf.wc.forEach((m)=>{
+    mount.appendChild(matchNode(
+      m.a, m.b, m.w,
+      ()=>{ m.w = m.a; recomputeAll(); renderAll(); },
+      ()=>{ m.w = m.b; recomputeAll(); renderAll(); }
+    ));
+  });
+
+  // Divisional
+  mount.appendChild(el("h3", { className:"round-title" }, ["Divisional"]));
+  conf.div.forEach((m)=>{
+    mount.appendChild(matchNode(
+      m.a, m.b, m.w,
+      m.a ? ()=>{ m.w = m.a; recomputeAll(); renderAll(); } : null,
+      m.b ? ()=>{ m.w = m.b; recomputeAll(); renderAll(); } : null
+    ));
+  });
+
+  // Conference Championship
+  mount.appendChild(el("h3", { className:"round-title" }, ["Conference Championship"]));
+  mount.appendChild(matchNode(
+    conf.conf.a, conf.conf.b, conf.conf.w,
+    conf.conf.a ? ()=>{ conf.conf.w = conf.conf.a; recomputeAll(); renderAll(); } : null,
+    conf.conf.b ? ()=>{ conf.conf.w = conf.conf.b; recomputeAll(); renderAll(); } : null
+  ));
+}
+
+function renderSuperBowl(mount){
+  clear(mount);
+  mount.appendChild(el("h2", {}, ["Super Bowl"]));
+  mount.appendChild(matchNode(
+    state.sb.a, state.sb.b, state.sb.w,
+    state.sb.a ? ()=>{ state.sb.w = state.sb.a; renderAll(); } : null,
+    state.sb.b ? ()=>{ state.sb.w = state.sb.b; renderAll(); } : null
+  ));
+}
+
+function buildPreviewText(){
+  const scoreboardName = (document.getElementById("scoreboardName").value || "").trim() || "[SCOREBOARD NAME MISSING]";
+  const lines = [];
+  lines.push(`Scoreboard name: ${scoreboardName}`);
+  lines.push("");
+
+  const addConf = (conf)=>{
+    lines.push(`${conf.name}:`);
+    conf.wc.forEach((m,i)=>lines.push(`  WC${i+1} (${m.a.seed}v${m.b.seed}): ${m.w ? m.w.name : "—"}`));
+    conf.div.forEach((m,i)=>lines.push(`  DIV${i+1}: ${m.a ? m.a.name : "—"} vs ${m.b ? m.b.name : "—"} -> ${m.w ? m.w.name : "—"}`));
+    lines.push(`  CONF: ${conf.conf.a ? conf.conf.a.name : "—"} vs ${conf.conf.b ? conf.conf.b.name : "—"} -> ${conf.conf.w ? conf.conf.w.name : "—"}`);
+    lines.push("");
+  };
+
+  addConf(state.afc);
+  addConf(state.nfc);
+
+  lines.push(`Super Bowl: ${state.sb.a ? state.sb.a.name : "—"} vs ${state.sb.b ? state.sb.b.name : "—"} -> Champion: ${state.sb.w ? state.sb.w.name : "—"}`);
+  document.getElementById("output").value = lines.join("\n");
+}
+
+function renderAll(){
+  renderConference(state.afc, document.getElementById("afc"));
+  renderConference(state.nfc, document.getElementById("nfc"));
+  renderSuperBowl(document.getElementById("superBowl"));
+  buildPreviewText();
+}
+
+renderAll();
+
+// ========================
+// SUBMIT + CSV
+// ========================
+function winnerObj(w) {
+  return w ? { name: w.name, seed: w.seed } : null;
+}
+
+function buildPayload(){
+  const scoreboardName = (document.getElementById("scoreboardName").value || "").trim();
+  const realName = (document.getElementById("realName").value || "").trim();
+  const email = (document.getElementById("email").value || "").trim();
+  const phone = (document.getElementById("phone").value || "").trim();
+
+  return {
+    scoreboard_name: scoreboardName,
+    real_name: realName,
+    email: email,
+    phone: phone,
+
+    picks: {
+      afc: {
+        wc: state.afc.wc.map(m => m.w ? { name: m.w.name, seed: m.w.seed } : null),
+        div: state.afc.div.map(m => m.w ? { name: m.w.name, seed: m.w.seed } : null),
+        conf: state.afc.conf.w ? { name: state.afc.conf.w.name, seed: state.afc.conf.w.seed } : null
+      },
+      nfc: {
+        wc: state.nfc.wc.map(m => m.w ? { name: m.w.name, seed: m.w.seed } : null),
+        div: state.nfc.div.map(m => m.w ? { name: m.w.name, seed: m.w.seed } : null),
+        conf: state.nfc.conf.w ? { name: state.nfc.conf.w.name, seed: state.nfc.conf.w.seed } : null
+      }
+    },
+
+    sb_champ: state.sb.w ? state.sb.w.name : "",
+    user_agent: navigator.userAgent
+  };
+}
+
+
+
+document.getElementById("submitBtn").addEventListener("click", async ()=>{
+  const scoreboardName = (document.getElementById("scoreboardName").value || "").trim();
+  const realName = (document.getElementById("realName").value || "").trim();
+  const email = (document.getElementById("email").value || "").trim();
+  const phone = (document.getElementById("phone").value || "").trim();
+
+  if (!scoreboardName) return alert("Enter your scoreboard name.");
+  if (!realName) return alert("Enter your real name.");
+  if (!email) return alert("Enter your email.");
+  if (!phone) return alert("Enter your phone number.");
+  if(!state.sb.w) return alert("Pick a Super Bowl champion before submitting.");
+
+  // If no backend URL configured, just tell them to copy preview text
+  if(!BACKEND_URL || BACKEND_URL.includes("PASTE_")){
+    alert("Backend URL not set. Copy the preview text as your submission, or set BACKEND_URL in the HTML.");
+    return;
+  }
+
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "Submitting...";
+
+  try{
+    await fetch(BACKEND_URL, {
+      method:"POST",
+      mode:"no-cors",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify(buildPayload())
+    });
+    alert("Submitted! You're good.");
+    btn.textContent = "Submitted ✓";
+  }catch(e){
+    alert("Submit failed. Use Download CSV as backup.");
+    btn.disabled = false;
+    btn.textContent = "Submit Picks";
+  }
+});
+
+document.getElementById("csvBtn").addEventListener("click", ()=>{
+  const scoreboardName = (document.getElementById("scoreboardName").value || "").trim();
+const realName = (document.getElementById("realName").value || "").trim();
+const email = (document.getElementById("email").value || "").trim();
+const phone = (document.getElementById("phone").value || "").trim();
+
+if (!scoreboardName) return alert("Enter your scoreboard name.");
+if (!realName) return alert("Enter your real name.");
+if (!email) return alert("Enter your email.");
+if (!phone) return alert("Enter your phone number.");
+if (!state.sb.w) return alert("Pick a Super Bowl champion before submitting.");
+
+  const rows = [];
+  const ts = new Date().toISOString();
+  const push = (slot, pick)=>rows.push([ts, scoreboardName, slot, (pick||"")].join(","));
+
+  state.afc.wc.forEach((m,i)=>push(`AFC_WC_${i+1}_(${m.a.seed}v${m.b.seed})`, m.w?.name));
+  state.afc.div.forEach((m,i)=>push(`AFC_DIV_${i+1}`, m.w?.name));
+  push("AFC_CONF", state.afc.conf.w?.name);
+
+  state.nfc.wc.forEach((m,i)=>push(`NFC_WC_${i+1}_(${m.a.seed}v${m.b.seed})`, m.w?.name));
+  state.nfc.div.forEach((m,i)=>push(`NFC_DIV_${i+1}`, m.w?.name));
+  push("NFC_CONF", state.nfc.conf.w?.name);
+
+  push("SB_CHAMP", state.sb.w?.name);
+
+  const csv = "timestamp,name,slot,pick\n" + rows.join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `NFL_bracket_${scoreboardName.replace(/[^a-z0-9_-]+/gi,"_")}.csv`;
+  // Optional: include contact info in the sheet backend; CSV is just a backup for scoring.
+
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  state.afc = makeConf(initial.afc);
+  state.nfc = makeConf(initial.nfc);
+  state.sb = {a:null,b:null,w:null};
+  renderAll();
+});
+</script>
+</body>
+</html>
