@@ -236,6 +236,11 @@ function sameTeam(a, b) {
 
   return true;
 }
+  
+function teamKey(t){
+  if (!t) return "";
+  return `${t.conf || ""}::${t.name || ""}`;
+}
 
 function matchNode(teamA, teamB, winner, pickA, pickB){
   const box = el("div", { className: "match" });
@@ -254,22 +259,21 @@ function matchNode(teamA, teamB, winner, pickA, pickB){
     pickHome = pickA;
   }
 
-  box.appendChild(teamNode(
-    away,
-    sameTeam(winner, away),
-    pickAway
-  ));
+box.appendChild(teamNode(
+  away,
+  !!(winner && away && teamKey(winner) === teamKey(away)),
+  pickAway
+));
 
-  // "@"
-  box.appendChild(el("div", { className: "at" }, ["@"]));
+box.appendChild(el("div", { className: "at" }, ["@"]));
 
-  box.appendChild(teamNode(
-    home,
-    !!(winner && home && winner.seed === home.seed),
-    pickHome,
-    "home"
-  ));
-
+box.appendChild(teamNode(
+  home,
+  !!(winner && home && teamKey(winner) === teamKey(home)),
+  pickHome,
+  "home"
+));
+  
   return box;
 }
 
@@ -312,8 +316,8 @@ function renderSuperBowl(mount){
   mount.appendChild(el("h2", {}, ["Super Bowl"]));
   mount.appendChild(matchNode(
     state.sb.a, state.sb.b, state.sb.w,
-    state.sb.a ? ()=>{ state.sb.w = state.sb.a; renderAll(); } : null,
-    state.sb.b ? ()=>{ state.sb.w = state.sb.b; renderAll(); } : null
+    state.sb.a ? ()=>{ state.sb.w = { name: state.sb.a.name, seed: state.sb.a.seed, conf: state.sb.a.conf }; renderAll(); } : null,
+    state.sb.b ? ()=>{ state.sb.w = { name: state.sb.b.name, seed: state.sb.b.seed, conf: state.sb.b.conf }; renderAll(); } : null
   ));
 }
 
@@ -474,6 +478,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
