@@ -18,9 +18,15 @@
 
   .match { border:1px solid #eee; border-radius:10px; padding:8px; margin: 10px 0; }
   .team { padding:10px; border:1px solid #ccc; border-radius:8px; margin:4px 0; cursor:pointer; font-size:16px; user-select:none; }
+ /* Only show hover effects on real hover devices (desktop) */
+  @media (hover: hover) and (pointer: fine) {
   .team:hover { background:#f6f6f6; }
+}
   .picked { background:#111; color:#fff; border-color:#111; font-weight:700; }
   .muted { opacity:.5; cursor:default; }
+  .team, button {
+  -webkit-tap-highlight-color: transparent;
+}
 
   .actions { margin-top:16px; display:flex; gap:10px; flex-wrap:wrap; }
   button { padding:12px 14px; border-radius:10px; border:1px solid #111; background:#111; color:#fff; font-size:16px; cursor:pointer; }
@@ -39,7 +45,7 @@
   }
 
   .team.home {
-    border-left: 6px solid ##1789f0;
+    border-left: 6px solid #1789f0;
     padding-left: 10px;
   }
 
@@ -455,4 +461,5 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
