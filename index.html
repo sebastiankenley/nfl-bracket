@@ -53,7 +53,8 @@
 </head>
 
 <body>
-  <h1>NFL Playoff Bracket Picks</h1>
+  <h1>2025 NFL Playoff Bracket Generator</h1>
+  <h2>Please submit your picks by midnight on Friday, January 9th, 2025</h2>
   <div class="note">Tap a team to advance them. Seeding rules are enforced automatically (1 seed bye, 1 plays lowest remaining).</div>
 
 <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:10px;">
@@ -223,6 +224,18 @@ function teamNode(team, isPicked, onPick, extraClass = ""){
   }
   return d;
 }
+  
+function sameTeam(a, b) {
+  if (!a || !b) return false;
+
+  // Name is the primary unique identifier
+  if (a.name !== b.name) return false;
+
+  // If conference exists (Super Bowl), ensure it matches
+  if (a.conf && b.conf && a.conf !== b.conf) return false;
+
+  return true;
+}
 
 function matchNode(teamA, teamB, winner, pickA, pickB){
   const box = el("div", { className: "match" });
@@ -243,7 +256,7 @@ function matchNode(teamA, teamB, winner, pickA, pickB){
 
   box.appendChild(teamNode(
     away,
-    !!(winner && away && winner.seed === away.seed),
+    sameTeam(winner, away),
     pickAway
   ));
 
@@ -461,6 +474,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
