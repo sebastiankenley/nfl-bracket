@@ -186,11 +186,11 @@
   }
 
   /* ---------- iPhone / small screen spacing ---------- */
-  @media (max-width: 480px) {
+  @media (max-width: 380px) {
 
     .page {
       padding: 24px 14px;
-      max-width: 400px;
+      max-width: 360px;
       margin: 0 auto;
     }
 
@@ -417,8 +417,8 @@ function recomputeAll(){
     return;
   }
 
-  state.sb.a = { seed: a.seed, name: a.name, conf: "AFC" };
-  state.sb.b = { seed: n.seed, name: n.name, conf: "NFC" };
+    state.sb.a = { seed: a.seed, name: a.name, code: a.code, conf: "AFC" };
+    state.sb.b = { seed: n.seed, name: n.name, code: n.code, conf: "NFC" };
 
   if (state.sb.w && ![state.sb.a.name, state.sb.b.name].includes(state.sb.w.name)) state.sb.w = null;
 }
@@ -557,8 +557,8 @@ function renderSuperBowl(mount){
   mount.appendChild(el("h2", {}, ["Super Bowl"]));
   mount.appendChild(matchNode(
     state.sb.a, state.sb.b, state.sb.w,
-    state.sb.a ? ()=>{ state.sb.w = { name: state.sb.a.name, seed: state.sb.a.seed, conf: state.sb.a.conf }; renderAll(); } : null,
-    state.sb.b ? ()=>{ state.sb.w = { name: state.sb.b.name, seed: state.sb.b.seed, conf: state.sb.b.conf }; renderAll(); } : null
+    state.sb.a ? () => { state.sb.w = state.sb.a; renderAll(); } : null,
+    state.sb.b ? () => { state.sb.w = state.sb.b; renderAll(); } : null
   ));
 }
 
@@ -719,4 +719,5 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
