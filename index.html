@@ -166,20 +166,21 @@
     .grid { grid-template-columns: 1fr; }
   }
   /* ---------- iPhone / small screen spacing ---------- */
-@media (max-width: 400px) {
-
-  /* Page breathing room */
+@media (max-width: 480px) {
   .page {
     padding: 24px 14px;
-    max-width: 360px;
+    max-width: 400px;
     margin: 0 auto;
   }
-.conf {
-  width: 100%;
-  max-width: 100%;
-}
-.grid {
-  grid-template-columns: 1fr;
+
+  .conf {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }
   /* Headings spacing */
   h1 {
@@ -675,6 +676,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
