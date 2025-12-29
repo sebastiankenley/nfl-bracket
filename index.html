@@ -186,22 +186,19 @@
   }
 
   /* ---------- iPhone / small screen spacing ---------- */
-  @media (max-width: 520px) {
+ @media (max-width: 520px) {
+  .page{
+    padding: 24px 14px;
+    max-width: none;   /* <-- important */
+  }
 
-    .page {
-      padding: 24px 14px;
-      max-width: none;
-      margin: 0 auto;
-    }
+  .conf{
+    width: 100%;
+    max-width: calc(100vw - 28px); /* 14px gutter each side */
+    margin: 0 auto;
+  }
+}
 
-    /* Headings spacing */
-    h1 { margin: 18px 0 12px; }
-    h2 { margin-bottom: 14px; }
-
-    .note {
-      margin-bottom: 16px;
-      line-height: 1.4;
-    }
 
     /* Form fields: add vertical separation */
     .form-row {
@@ -719,6 +716,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
