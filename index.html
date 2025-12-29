@@ -339,18 +339,20 @@ const BACKEND_URL = "https://script.google.com/macros/s/AKfycbw-4HuF7y0LiCyEHbRy
 // ========================
 function makeConf(conf){
   const s = conf.seeds;
+  const T = (seed) => ({ seed, ...s[seed] }); // <-- flatten {name, code} onto the team
+
   return {
     name: conf.name,
     wc: [
-      {a:{seed:2,name:s[2]}, b:{seed:7,name:s[7]}, w:null},
-      {a:{seed:3,name:s[3]}, b:{seed:6,name:s[6]}, w:null},
-      {a:{seed:4,name:s[4]}, b:{seed:5,name:s[5]}, w:null},
+      { a: T(2), b: T(7), w: null },
+      { a: T(3), b: T(6), w: null },
+      { a: T(4), b: T(5), w: null },
     ],
     div: [
-      {a:{seed:1,name:s[1]}, b:null, w:null},
-      {a:null, b:null, w:null}
+      { a: T(1), b: null, w: null },
+      { a: null, b: null, w: null }
     ],
-    conf: {a:null, b:null, w:null}
+    conf: { a: null, b: null, w: null }
   };
 }
 
@@ -717,3 +719,4 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
