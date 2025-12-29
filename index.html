@@ -245,6 +245,23 @@
     font-size: 17px;
   }
 }
+ /* === Mobile side padding fix === */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0 12px;   /* creates side gutters on phone */
+}
+
+.conf, .round, .group {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 16px;
+}
+
 </style>
 </head>
 
@@ -676,6 +693,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
