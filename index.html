@@ -50,7 +50,7 @@
   }
 /* --- Center layout adjustments --- */
 
-body {text-align: center;}
+/*body {text-align: center;}*/
 
 input {
   margin-left: auto;
@@ -65,6 +65,42 @@ input {
 .conf h3 {
   text-align: center;
 }
+/* Center headings + keep layout sane */
+h1, h2, .note { text-align: center; }
+
+/* Center the two conference boxes on the page */
+.grid {
+  justify-content: center;   /* centers the columns as a group */
+  justify-items: stretch;    /* keeps boxes full-width in their grid cells */
+}
+
+/* Make each conference panel a consistent width so they don’t look weird */
+.conf {
+  width: 380px;
+  max-width: 95vw;
+}
+
+/* Center the form row as a block, but keep labels/inputs left aligned */
+.form-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.form-row > div {
+  text-align: left;
+}
+
+.form-row input {
+  width: 220px;
+  max-width: 90vw;
+}
+
+/* Keep team labels readable */
+.team { text-align: left; }
+.at { text-align: center; width: 100%; }
 
 </style>
 </head>
@@ -74,7 +110,7 @@ input {
   <h2>Please submit your picks by midnight on Friday, January 9th, 2026</h2>
   <div class="note">Tap a team to advance them. Seeding rules are enforced automatically (1 seed bye, 1 plays lowest remaining).</div>
 
-<div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:10px;">
+<div class="form-row">
   <div>
     <label>Scoreboard name</label>
     <input id="scoreboardName" placeholder="Name shown on scoreboard" autocomplete="nickname">
@@ -494,4 +530,5 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
