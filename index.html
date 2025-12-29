@@ -161,10 +161,78 @@
   /* ---------- Mobile ---------- */
   @media (max-width: 820px){
     .grid { grid-template-columns: 1fr; }
-    .conf { max-width: 95vw; margin: 0 auto; }
-    input { width: 90vw; }
-    .actions { justify-content: flex-start; }
   }
+  /* ---------- iPhone / small screen spacing ---------- */
+@media (max-width: 480px) {
+
+  /* Page breathing room */
+  .page {
+    padding: 24px 14px;
+  }
+
+  /* Headings spacing */
+  h1 {
+    margin-bottom: 12px;
+  }
+
+  h2 {
+    margin-bottom: 14px;
+  }
+
+  .note {
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+
+  /* Form fields: add vertical separation */
+  .form-row {
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  label {
+    margin-top: 14px;
+  }
+
+  input {
+    padding: 14px;
+    font-size: 17px; /* prevents iOS zoom + improves readability */
+  }
+
+  /* Bracket spacing */
+  .conf {
+    padding: 16px;
+  }
+
+  .match {
+    margin: 14px 0;
+  }
+
+  .team {
+    padding: 14px;
+    margin: 6px 0;
+  }
+
+  .at {
+    margin: 10px 0;
+  }
+
+  /* Super Bowl separation */
+  .superbowl-wrap {
+    margin-top: 48px;
+  }
+
+  /* Buttons: easier thumbs */
+  .actions {
+    gap: 14px;
+    margin-top: 36px;
+  }
+
+  button {
+    padding: 14px 18px;
+    font-size: 17px;
+  }
+}
 </style>
 </head>
 
@@ -596,6 +664,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
