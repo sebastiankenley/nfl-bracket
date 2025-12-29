@@ -91,6 +91,25 @@
     user-select:none;
     text-align: left;
   }
+.team {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.team img.logo {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .team img.logo {
+    width: 24px;
+    height: 24px;
+  }
+}
 
   /* Only show hover effects on real hover devices (desktop) */
   @media (hover: hover) and (pointer: fine) {
@@ -282,16 +301,35 @@
 // ========================
 
 // Replace team names once bracket is set
+
 const initial = {
-  afc: { name:"AFC", seeds:{
-    1:"Denver Broncos", 2:"New England Patriots", 3:"Jacksonville Jaguars", 4:"Pittsburgh Steelers",
-    5:"Buffalo Bills", 6:"Houston Texans", 7:"Los Angeles Chargers"
-  }},
-  nfc: { name:"NFC", seeds:{
-    1:"Seattle Seahawks", 2:"Chicago Bears", 3:"Philidelphia Eagles", 4:"Carolina Panthers",
-    5:"San Francisco 49ers", 6:"Los Angeles Rams", 7:"Detroit Lions"
-  }}
+  afc: {
+    name: "AFC",
+    seeds: {
+      1: { name: "Denver Broncos", code: "den" },
+      2: { name: "New England Patriots", code: "ne" },
+      3: { name: "Jacksonville Jaguars", code: "jax" },
+      4: { name: "Pittsburgh Steelers", code: "pit" },
+      5: { name: "Buffalo Bills", code: "buf" },
+      6: { name: "Houston Texans", code: "hou" },
+      7: { name: "Los Angeles Chargers", code: "lac" }
+    }
+  },
+
+  nfc: {
+    name: "NFC",
+    seeds: {
+      1: { name: "Seattle Seahawks", code: "sea" },
+      2: { name: "Chicago Bears", code: "chi" },
+      3: { name: "Philadelphia Eagles", code: "phi" },
+      4: { name: "Carolina Panthers", code: "car" },
+      5: { name: "San Francisco 49ers", code: "sf" },
+      6: { name: "Los Angeles Rams", code: "lar" },
+      7: { name: "Detroit Lions", code: "det" }
+    }
+  }
 };
+
 
 // Google Apps Script Web App URL
 const BACKEND_URL = "https://script.google.com/macros/s/AKfycbw-4HuF7y0LiCyEHbRyTLnuKdmTaktl8YDM90vAp8vyx9eOZ9rtiy1w1W4aoq3j17hw/exec";
@@ -395,16 +433,36 @@ function el(tag, props={}, children=[]){
   return node;
 }
 
-function teamNode(team, isPicked, onPick, extraClass = ""){
-  const d = el("div", { className: "team" + (isPicked ? " picked" : "") + (extraClass ? " " + extraClass : "") });
-  d.textContent = team ? `(${team.seed}) ${team.name}` : "—";
-  if (!team || !onPick){
+function teamNode(team, isPicked, onPick, extraClass = "") {
+  const d = el("div", {
+    className: "team" + (isPicked ? " picked" : "") + (extraClass ? " " + extraClass : "")
+  });
+
+  // Logo (from local /logos folder)
+  if (team && team.code) {
+    const img = el("img", {
+      src: `logos/${team.code}.png`,
+      alt: `${team.name} logo`,
+      className: "logo"
+    });
+    img.onerror = () => { img.style.display = "none"; };
+    d.appendChild(img);
+  }
+
+  const label = el("span", {}, [
+    team ? `(${team.seed}) ${team.name}` : "—"
+  ]);
+  d.appendChild(label);
+
+  if (!team || !onPick) {
     d.classList.add("muted");
   } else {
     d.addEventListener("click", onPick);
   }
+
   return d;
 }
+
   
 function sameTeam(a, b) {
   if (!a || !b) return false;
@@ -659,18 +717,3 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
