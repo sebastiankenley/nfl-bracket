@@ -6,6 +6,9 @@
 <title>NFL Playoff Bracket Generator</title>
 
 <style>
+  *, *::before, *::after {
+  box-sizing: border-box;
+}
   /* ---------- Base page ---------- */
   body {
     font-family: Arial, sans-serif;
@@ -169,7 +172,13 @@
   .page {
     padding: 24px 14px;
   }
-
+.conf {
+  width: 100%;
+  max-width: 100%;
+}
+.grid {
+  grid-template-columns: 1fr;
+}
   /* Headings spacing */
   h1 {
     margin-bottom: 12px;
@@ -664,6 +673,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
