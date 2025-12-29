@@ -90,26 +90,19 @@
     font-size:16px;
     user-select:none;
     text-align: left;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
   }
-.team {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
 
-.team img.logo {
-  width: 26px;
-  height: 26px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-@media (max-width: 480px) {
   .team img.logo {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    flex-shrink: 0;
   }
-}
 
   /* Only show hover effects on real hover devices (desktop) */
   @media (hover: hover) and (pointer: fine) {
@@ -182,23 +175,29 @@
 
   /* ---------- Tablet / small screens: collapse to one column ---------- */
   @media (max-width: 820px){
-    .grid { grid-template-columns: 1fr; }
+    .grid { grid-template-columns: 1fr; gap: 16px; }
   }
 
-  /* ---------- iPhone / small screen spacing ---------- */
- @media (max-width: 520px) {
-  .page{
-    padding: 24px 14px;
-    max-width: none;   /* <-- important */
-  }
+  /* ---------- Phones: spacing + gutters ---------- */
+  @media (max-width: 520px) {
+    .page{
+      padding: 24px 14px;
+      max-width: none;
+    }
 
-  .conf{
-    width: 100%;
-    max-width: calc(100vw - 28px); /* 14px gutter each side */
-    margin: 0 auto;
-  }
-}
+    /* Center the conference card and keep gutters */
+    .conf{
+      width: 100%;
+      max-width: calc(100vw - 28px); /* 14px gutter each side */
+      margin: 0 auto;
+      padding: 16px;
+    }
 
+    /* Slightly smaller logos on phone */
+    .team img.logo {
+      width: 24px;
+      height: 24px;
+    }
 
     /* Form fields: add vertical separation */
     .form-row {
@@ -216,11 +215,6 @@
     }
 
     /* Bracket spacing */
-    .conf {
-      padding: 16px;
-      max-width: 100%;
-    }
-
     .match { margin: 14px 0; }
 
     .team {
@@ -245,6 +239,7 @@
     }
   }
 </style>
+
 </head>
 
 <body>
@@ -716,6 +711,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
