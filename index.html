@@ -111,8 +111,7 @@ const initial = {
   }}
 };
 
-// Paste your Google Apps Script Web App URL here (optional)
-// If you leave it blank, "Submit Picks" will just generate preview text.
+// Google Apps Script Web App URL
 const BACKEND_URL = "https://script.google.com/macros/s/AKfycbw-4HuF7y0LiCyEHbRyTLnuKdmTaktl8YDM90vAp8vyx9eOZ9rtiy1w1W4aoq3j17hw/exec";
 
 // ========================
@@ -203,7 +202,7 @@ function recomputeAll(){
 }
 
 // ========================
-// RENDER HELPERS (NO innerHTML AFTER APPENDS)
+// RENDER HELPERS (NO inner HTML AFTER APPENDS)
 // ========================
 function clear(el){ while(el.firstChild) el.removeChild(el.firstChild); }
 
@@ -419,7 +418,7 @@ document.getElementById("submitBtn").addEventListener("click", async ()=>{
       headers:{ "Content-Type":"application/json" },
       body: JSON.stringify(buildPayload())
     });
-    alert("Submitted! You're good.");
+    alert("Submitted! You're good to go! Thanks for playing!");
     btn.textContent = "Submitted ✓";
   }catch(e){
     alert("Submit failed. Use Download CSV as backup.");
@@ -438,7 +437,7 @@ if (!scoreboardName) return alert("Enter your scoreboard name.");
 if (!realName) return alert("Enter your real name.");
 if (!email) return alert("Enter your email.");
 if (!phone) return alert("Enter your phone number.");
-if (!state.sb.w) return alert("Pick a Super Bowl champion before submitting.");
+if (!state.sb.w) return alert("Pick a Super Bowl Champion before submitting.");
 
   const rows = [];
   const ts = new Date().toISOString();
@@ -478,6 +477,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
