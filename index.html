@@ -6,35 +6,110 @@
 <title>NFL Playoff Bracket Generator</title>
 
 <style>
-  body { font-family: Arial, sans-serif; margin: 16px; max-width: 1000px; }
-  h1 { margin: 0 0 6px; }
-  .note { color:#555; font-size:14px; margin-bottom:10px; }
-  label { font-weight:700; display:block; margin-top:8px; }
-  input { padding:10px; width:100%; max-width:340px; font-size:16px; margin-top:4px; }
+  /* ---------- Base page ---------- */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #fff;
+  }
 
-  .grid { display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:16px; }
-  .conf { border:2px solid #000; border-radius:10px; padding:12px; }
+  /* Wrap your body content in <div class="page"> ... </div> */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;          /* TRUE centering */
+    padding: 16px;
+  }
+
+  h1 { margin: 0 0 6px; text-align: center; }
+  h2 { margin: 0 0 10px; text-align: center; }
+  .note { color:#555; font-size:14px; margin-bottom:10px; text-align: center; }
+
+  /* ---------- Form row ---------- */
+  .form-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    margin-bottom: 6px;
+  }
+
+  .form-row > div { text-align: left; }
+
+  label { font-weight:700; display:block; margin-top:8px; }
+
+  /* Inputs: consistent sizing */
+  input {
+    padding:10px;
+    width: 240px;
+    max-width: 90vw;
+    font-size:16px;
+    margin-top:4px;
+    border: 1px solid #666;
+    border-radius: 4px;
+  }
+
+  /* ---------- Bracket layout ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(380px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+    justify-content: center;
+  }
+
+  .conf {
+    border:2px solid #000;
+    border-radius:10px;
+    padding:12px;
+    width: 100%;
+  }
+
+  .conf h2,
+  .conf h3 { text-align: center; }
+
   .round-title { margin: 12px 0 6px; }
 
-  .match { border:2px solid #000; border-radius:10px; padding:8px; margin: 10px 0; }
-  .team { padding:10px; border:2px solid #000; border-radius:8px; margin:4px 0; cursor:pointer; font-size:16px; user-select:none; }
- /* Only show hover effects on real hover devices (desktop) */
+  .match {
+    border:2px solid #000;
+    border-radius:10px;
+    padding:8px;
+    margin: 10px 0;
+  }
+
+  .team {
+    padding:10px;
+    border:2px solid #000;
+    border-radius:8px;
+    margin:4px 0;
+    cursor:pointer;
+    font-size:16px;
+    user-select:none;
+    text-align: left; /* keep readable */
+  }
+
+  /* Only show hover effects on real hover devices (desktop) */
   @media (hover: hover) and (pointer: fine) {
-  .team:hover { background:#f6f6f6; }
-}
-  .picked { background:#111; color:#fff; border-color:#111; font-weight:700; }
+    .team:hover { background:#f6f6f6; }
+  }
+
+  .picked {
+    background:#111;
+    color:#fff;
+    border-color:#111;
+    font-weight:700;
+  }
+
   .muted { opacity:.5; cursor:default; }
-  .team, button {
-  -webkit-tap-highlight-color: transparent;
-}
 
-  .actions { margin-top:16px; display:flex; gap:10px; flex-wrap:wrap; }
-  button { padding:12px 14px; border-radius:10px; border:1px solid #111; background:#111; color:#fff; font-size:16px; cursor:pointer; }
-  button.secondary { background:#fff; color:#111; }
+  /* Kill mobile tap highlight */
+  .team, button { -webkit-tap-highlight-color: transparent; }
 
-  textarea { width:100%; min-height:170px; margin-top:10px; padding:10px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size:13px; }
-
-  @media (max-width:800px){ .grid { grid-template-columns:1fr; } }
+  /* Home team accent (2nd line in matchup) */
+  .team.home {
+    border-left: 6px solid #1789f0;
+    padding-left: 10px;
+  }
 
   .at {
     text-align: center;
@@ -42,66 +117,47 @@
     color: #000;
     margin: 6px 0;
     user-select: none;
+    width: 100%;
   }
 
-  .team.home {
-    border-left: 6px solid #1789f0;
-    padding-left: 10px;
+  /* ---------- Actions + output ---------- */
+  .actions {
+    margin-top:16px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content: center;
   }
-/* --- Center layout adjustments --- */
 
-/*body {text-align: center;}*/
+  button {
+    padding:12px 14px;
+    border-radius:10px;
+    border:1px solid #111;
+    background:#111;
+    color:#fff;
+    font-size:16px;
+    cursor:pointer;
+  }
 
-input {
-  margin-left: auto;
-  margin-right: auto;
-  display: block;}
-.grid {justify-items: center;}
-.team {text-align: left;}
-.at {text-align: center; 
-     width: 100%;}
-  
-.conf h2,
-.conf h3 {
-  text-align: center;
-}
-/* Center headings + keep layout sane */
-h1, h2, .note { text-align: center; }
+  button.secondary { background:#fff; color:#111; }
 
-/* Center the two conference boxes on the page */
-.grid {
-  justify-content: center;   /* centers the columns as a group */
-  justify-items: stretch;    /* keeps boxes full-width in their grid cells */
-}
+  textarea {
+    width:100%;
+    min-height:170px;
+    margin-top:10px;
+    padding:10px;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size:13px;
+    box-sizing: border-box;
+  }
 
-/* Make each conference panel a consistent width so they don’t look weird */
-.conf {
-  width: 380px;
-  max-width: 95vw;
-}
-
-/* Center the form row as a block, but keep labels/inputs left aligned */
-.form-row {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
-
-.form-row > div {
-  text-align: left;
-}
-
-.form-row input {
-  width: 220px;
-  max-width: 90vw;
-}
-
-/* Keep team labels readable */
-.team { text-align: left; }
-.at { text-align: center; width: 100%; }
-
+  /* ---------- Mobile ---------- */
+  @media (max-width: 820px){
+    .grid { grid-template-columns: 1fr; }
+    .conf { max-width: 95vw; margin: 0 auto; }
+    input { width: 90vw; }
+    .actions { justify-content: flex-start; }
+  }
 </style>
 </head>
 
@@ -530,5 +586,6 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
