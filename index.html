@@ -558,12 +558,6 @@ function recomputeConference(conf){
   conf.div[1].a = others[0] || null;
   conf.div[1].b = others[1] || null;
 
-  // Validate divisional winners
-  conf.div.forEach(m => {
-    if (!m.a || !m.b) m.w = null;
-    else if (m.w && ![m.a.seed, m.b.seed].includes(m.w.seed)) m.w = null;
-  });
-
   // Conf champ from div winners
   const divWinners = conf.div.map(m => m.w).filter(Boolean);
   conf.conf.a = divWinners[0] || null;
@@ -916,6 +910,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
