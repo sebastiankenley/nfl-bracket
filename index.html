@@ -238,6 +238,49 @@
       font-size: 17px;
     }
   }
+  /* ===== Pop: smooth interactions ===== */
+
+/* Team button motion */
+.team{
+  transition:
+    background-color 140ms ease,
+    color 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
+  will-change: transform;
+}
+
+/* Slight lift on hover (desktop only) */
+@media (hover: hover) and (pointer: fine) {
+  .team:not(.muted):hover{
+    transform: translateY(-1px);
+  }
+}
+
+/* "selected" bounce */
+.team.picked{
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+}
+
+/* Match cards fade in when re-rendered */
+.match{
+  animation: matchIn 180ms ease-out;
+}
+
+@keyframes matchIn{
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Respect reduced motion settings */
+@media (prefers-reduced-motion: reduce) {
+  .team{ transition: none; }
+  .team.picked{ transform: none; box-shadow: none; }
+  .match{ animation: none; }
+}
+
 </style>
 
 </head>
@@ -711,6 +754,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
