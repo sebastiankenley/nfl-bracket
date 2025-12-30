@@ -558,34 +558,28 @@ function recomputeConference(conf){
   conf.div[1].a = others[0] || null;
   conf.div[1].b = others[1] || null;
 
-  // Conf champ from div winners
-  const divWinners = conf.div.map(m => m.w).filter(Boolean);
-  conf.conf.a = divWinners[0] || null;
-  conf.conf.b = divWinners[1] || null;
-
-  if (conf.conf.w && !sameTeam(conf.conf.w, conf.conf.a) && !sameTeam(conf.conf.w, conf.conf.b)){
-    conf.conf.w = null;
-  }
-}
-
-
   // Validate divisional winners
-  conf.div.forEach(m=>{
+  conf.div.forEach(m => {
     if (!m.a || !m.b) m.w = null;
     else if (m.w && ![m.a.seed, m.b.seed].includes(m.w.seed)) m.w = null;
   });
 
   // Conf champ from div winners
-  const divWinners = conf.div.map(m=>m.w).filter(Boolean);
-  if (divWinners.length < 2){
-    conf.conf.a = null; conf.conf.b = null; conf.conf.w = null;
-    return;
-  }
+  const divWinners = conf.div.map(m => m.w).filter(Boolean);
+  conf.conf.a = divWinners[0] || null;
+  conf.conf.b = divWinners[1] || null;
 
-  conf.conf.a = divWinners[0];
-  conf.conf.b = divWinners[1];
-  if (conf.conf.w && ![conf.conf.a.seed, conf.conf.b.seed].includes(conf.conf.w.seed)) conf.conf.w = null;
+  // Validate conf winner
+  if (conf.conf.w && !conf.conf.a && !conf.conf.b) conf.conf.w = null;
+  else if (conf.conf.w && conf.conf.a && conf.conf.w.name !== conf.conf.a.name && conf.conf.b && conf.conf.w.name !== conf.conf.b.name) {
+    conf.conf.w = null;
+  } else if (conf.conf.w && conf.conf.a && !conf.conf.b && conf.conf.w.name !== conf.conf.a.name) {
+    conf.conf.w = null;
+  } else if (conf.conf.w && conf.conf.b && !conf.conf.a && conf.conf.w.name !== conf.conf.b.name) {
+    conf.conf.w = null;
+  }
 }
+
 
 function recomputeAll(){
   recomputeConference(state.afc);
@@ -910,6 +904,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
