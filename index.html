@@ -535,7 +535,7 @@ let state = {
 
 function sortBySeedAsc(arr){ return arr.slice().sort((x,y)=>x.seed-y.seed); }
 
-ffunction recomputeConference(conf){
+function recomputeConference(conf){
   const wcWinners = conf.wc.map(m => m.w).filter(Boolean);
 
   // If WC not complete, clear downstream
@@ -916,6 +916,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
