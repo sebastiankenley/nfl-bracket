@@ -72,24 +72,32 @@
   .conf h2,
   .conf h3 { text-align: center; }
 
-  /* ===== Conference identity accents ===== */
+/* ===== Conference identity accents ===== */
 
-.conf.afc {
-  box-shadow: inset 0 0 0 3px rgba(1, 51, 105, 0.18); /* NFL blue */
+#afc {
+  box-shadow: inset 0 0 0 3px rgba(1, 51, 105, 0.22); /* NFL blue */
 }
 
-.conf.nfc {
-  box-shadow: inset 0 0 0 3px rgba(213, 10, 10, 0.18); /* NFL red */
+#nfc {
+  box-shadow: inset 0 0 0 3px rgba(213, 10, 10, 0.22); /* NFL red */
 }
 
-/* Slight header emphasis */
-.conf.afc h2 {
+#afc h2 {
   color: #013369;
 }
 
-.conf.nfc h2 {
+#nfc h2 {
   color: #d50a0a;
 }
+
+/* Mobile: soften accent */
+@media (max-width: 520px) {
+  #afc,
+  #nfc {
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,0.18);
+  }
+}
+
 
 /* Mobile: soften accent slightly */
 @media (max-width: 520px) {
@@ -771,6 +779,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
