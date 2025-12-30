@@ -535,8 +535,8 @@ let state = {
 
 function sortBySeedAsc(arr){ return arr.slice().sort((x,y)=>x.seed-y.seed); }
 
-function recomputeConference(conf){
-  const wcWinners = conf.wc.map(m=>m.w).filter(Boolean);
+ffunction recomputeConference(conf){
+  const wcWinners = conf.wc.map(m => m.w).filter(Boolean);
 
   // If WC not complete, clear downstream
   if (wcWinners.length < 3){
@@ -546,17 +546,34 @@ function recomputeConference(conf){
     return;
   }
 
-  // Remaining teams: 1 seed + WC winners
-  const remaining = [{seed:1, name:conf.div[0].a.name}, ...wcWinners];
+  // Remaining teams: KEEP full #1 seed object + WC winners
+  const remaining = [conf.div[0].a, ...wcWinners];
   const sorted = sortBySeedAsc(remaining);
 
-  // 1 plays lowest remaining (highest seed #)
+  // 1 seed plays lowest remaining (highest seed number)
   const lowest = sorted[sorted.length - 1];
-  const others = sorted.slice(0, sorted.length - 1).filter(t => t.seed !== 1); // two teams
+  const others = sorted.slice(0, sorted.length - 1).filter(t => t.seed !== 1);
 
   conf.div[0].b = lowest;
-  conf.div[1].a = others[0];
-  conf.div[1].b = others[1];
+  conf.div[1].a = others[0] || null;
+  conf.div[1].b = others[1] || null;
+
+  // Validate divisional winners
+  conf.div.forEach(m => {
+    if (!m.a || !m.b) m.w = null;
+    else if (m.w && ![m.a.seed, m.b.seed].includes(m.w.seed)) m.w = null;
+  });
+
+  // Conf champ from div winners
+  const divWinners = conf.div.map(m => m.w).filter(Boolean);
+  conf.conf.a = divWinners[0] || null;
+  conf.conf.b = divWinners[1] || null;
+
+  if (conf.conf.w && !sameTeam(conf.conf.w, conf.conf.a) && !sameTeam(conf.conf.w, conf.conf.b)){
+    conf.conf.w = null;
+  }
+}
+
 
   // Validate divisional winners
   conf.div.forEach(m=>{
@@ -644,43 +661,6 @@ function teamNode(team, isPicked, onPick, extraClass = "") {
 
   return d;
 }
-
-  let frames = 0;
-  function tick(){
-    frames++;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    for(const p of parts){
-      p.life++;
-      p.vy += p.g;
-      p.x += p.vx;
-      p.y += p.vy;
-      p.rot += p.vr;
-
-      const alpha = Math.max(0, Math.min(1, 1 - (p.life / p.ttl)));
-      ctx.globalAlpha = alpha;
-
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rot);
-      ctx.fillStyle = p.c;
-      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-      ctx.restore();
-    }
-
-    ctx.globalAlpha = 1;
-
-    if(frames < 90){
-      requestAnimationFrame(tick);
-    } else {
-      canvas.remove();
-    }
-  }
-
-  window.addEventListener("resize", resize, { once: true });
-  requestAnimationFrame(tick);
-}
-
   
 function sameTeam(a, b) {
   if (!a || !b) return false;
@@ -936,6 +916,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
