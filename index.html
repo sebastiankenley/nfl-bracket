@@ -72,6 +72,33 @@
   .conf h2,
   .conf h3 { text-align: center; }
 
+  /* ===== Conference identity accents ===== */
+
+.conf.afc {
+  box-shadow: inset 0 0 0 3px rgba(1, 51, 105, 0.18); /* NFL blue */
+}
+
+.conf.nfc {
+  box-shadow: inset 0 0 0 3px rgba(213, 10, 10, 0.18); /* NFL red */
+}
+
+/* Slight header emphasis */
+.conf.afc h2 {
+  color: #013369;
+}
+
+.conf.nfc h2 {
+  color: #d50a0a;
+}
+
+/* Mobile: soften accent slightly */
+@media (max-width: 520px) {
+  .conf.afc,
+  .conf.nfc {
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,0.18);
+  }
+}
+
   .round-title { margin: 12px 0 6px; }
 
   .match {
@@ -262,16 +289,6 @@
 .team.picked{
   transform: translateY(-1px) scale(1.01);
   box-shadow: 0 6px 14px rgba(0,0,0,0.18);
-}
-
-/* Match cards fade in when re-rendered */
-.match{
-  animation: matchIn 180ms ease-out;
-}
-
-@keyframes matchIn{
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Respect reduced motion settings */
@@ -754,6 +771,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
