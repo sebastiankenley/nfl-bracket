@@ -749,6 +749,9 @@ function renderSuperBowl(mount){
 }
 
 function buildPreviewText(){
+  const out = document.getElementById("output");
+  if (!out) return; // textarea removed, so do nothing
+
   const scoreboardName = (document.getElementById("scoreboardName").value || "").trim() || "[SCOREBOARD NAME MISSING]";
   const lines = [];
   lines.push(`Scoreboard name: ${scoreboardName}`);
@@ -766,8 +769,9 @@ function buildPreviewText(){
   addConf(state.nfc);
 
   lines.push(`Super Bowl: ${state.sb.a ? state.sb.a.name : "—"} vs ${state.sb.b ? state.sb.b.name : "—"} -> Champion: ${state.sb.w ? state.sb.w.name : "—"}`);
-  document.getElementById("output").value = lines.join("\n");
+  out.value = lines.join("\n");
 }
+
 
 function renderAll(){
   renderConference(state.afc, document.getElementById("afc"));
@@ -855,46 +859,47 @@ document.getElementById("submitBtn").addEventListener("click", async ()=>{
   }
 });
 
-/*document.getElementById("csvBtn").addEventListener("click", ()=>{
-  const scoreboardName = (document.getElementById("scoreboardName").value || "").trim();
-const realName = (document.getElementById("realName").value || "").trim();
-const email = (document.getElementById("email").value || "").trim();
-const phone = (document.getElementById("phone").value || "").trim();
-
-if (!scoreboardName) return alert("Enter your scoreboard name.");
-if (!realName) return alert("Enter your real name.");
-if (!email) return alert("Enter your email.");
-if (!phone) return alert("Enter your phone number.");
-if (!state.sb.w) return alert("Pick a Super Bowl Champion before submitting.");
+/*
+// CSV download backup (disabled)
+// document.getElementById("csvBtn").addEventListener("click", ()=>{
+//   const scoreboardName = (document.getElementById("scoreboardName").value || "").trim();
+//   const realName = (document.getElementById("realName").value || "").trim();
+//   const email = (document.getElementById("email").value || "").trim();
+//   const phone = (document.getElementById("phone").value || "").trim();
+//
+//   if (!scoreboardName) return alert("Enter your scoreboard name.");
+//   if (!realName) return alert("Enter your real name.");
+//   if (!email) return alert("Enter your email.");
+//   if (!phone) return alert("Enter your phone number.");
+//   if (!state.sb.w) return alert("Pick a Super Bowl Champion before submitting.");
+//
+//   const rows = [];
+//   const ts = new Date().toISOString();
+//   const push = (slot, pick)=>rows.push([ts, scoreboardName, slot, (pick||"")].join(","));
+//
+//   state.afc.wc.forEach((m,i)=>push(`AFC_WC_${i+1}_(${m.a.seed}v${m.b.seed})`, m.w?.name));
+//   state.afc.div.forEach((m,i)=>push(`AFC_DIV_${i+1}`, m.w?.name));
+//   push("AFC_CONF", state.afc.conf.w?.name);
+//
+//   state.nfc.wc.forEach((m,i)=>push(`NFC_WC_${i+1}_(${m.a.seed}v${m.b.seed})`, m.w?.name));
+//   state.nfc.div.forEach((m,i)=>push(`NFC_DIV_${i+1}`, m.w?.name));
+//   push("NFC_CONF", state.nfc.conf.w?.name);
+//
+//   push("SB_CHAMP", state.sb.w?.name);
+//
+//   const csv = "timestamp,name,slot,pick\n" + rows.join("\n");
+//   const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+//   const url = URL.createObjectURL(blob);
+//
+//   const a = document.createElement("a");
+//   a.href = url;
+//   a.download = `NFL_bracket_${scoreboardName.replace(/[^a-z0-9_-]+/gi,"_")}.csv`;
+//   document.body.appendChild(a);
+//   a.click();
+//   a.remove();
+//   URL.revokeObjectURL(url);
+// });
 */
-  const rows = [];
-  const ts = new Date().toISOString();
-  const push = (slot, pick)=>rows.push([ts, scoreboardName, slot, (pick||"")].join(","));
-
-  state.afc.wc.forEach((m,i)=>push(`AFC_WC_${i+1}_(${m.a.seed}v${m.b.seed})`, m.w?.name));
-  state.afc.div.forEach((m,i)=>push(`AFC_DIV_${i+1}`, m.w?.name));
-  push("AFC_CONF", state.afc.conf.w?.name);
-
-  state.nfc.wc.forEach((m,i)=>push(`NFC_WC_${i+1}_(${m.a.seed}v${m.b.seed})`, m.w?.name));
-  state.nfc.div.forEach((m,i)=>push(`NFC_DIV_${i+1}`, m.w?.name));
-  push("NFC_CONF", state.nfc.conf.w?.name);
-
-  push("SB_CHAMP", state.sb.w?.name);
-
-  const csv = "timestamp,name,slot,pick\n" + rows.join("\n");
-  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `NFL_bracket_${scoreboardName.replace(/[^a-z0-9_-]+/gi,"_")}.csv`;
-  // Optional: include contact info in the sheet backend; CSV is just a backup for scoring.
-
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-});
 
 document.getElementById("resetBtn").addEventListener("click", ()=>{
   state.afc = makeConf(initial.afc);
@@ -905,4 +910,5 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
