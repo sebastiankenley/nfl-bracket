@@ -366,12 +366,13 @@
 
   <div class="actions">
     <button id="submitBtn">Submit Picks</button>
-    <button class="secondary" id="csvBtn">Download CSV</button>
+    <!--<button class="secondary" id="csvBtn">Download CSV</button>-->
     <button class="secondary" id="resetBtn">Reset</button>
   </div>
 
-  <textarea id="output" placeholder="Preview / backup text will show here"></textarea>
-
+  <!-- DEBUG BACKUP OUTPUT
+ <textarea id="output" placeholder="Preview / backup text will show here"></textarea>
+  -->
 <script>
 // ========================
 // CONFIG
@@ -854,7 +855,7 @@ document.getElementById("submitBtn").addEventListener("click", async ()=>{
   }
 });
 
-document.getElementById("csvBtn").addEventListener("click", ()=>{
+/*document.getElementById("csvBtn").addEventListener("click", ()=>{
   const scoreboardName = (document.getElementById("scoreboardName").value || "").trim();
 const realName = (document.getElementById("realName").value || "").trim();
 const email = (document.getElementById("email").value || "").trim();
@@ -865,7 +866,7 @@ if (!realName) return alert("Enter your real name.");
 if (!email) return alert("Enter your email.");
 if (!phone) return alert("Enter your phone number.");
 if (!state.sb.w) return alert("Pick a Super Bowl Champion before submitting.");
-
+*/
   const rows = [];
   const ts = new Date().toISOString();
   const push = (slot, pick)=>rows.push([ts, scoreboardName, slot, (pick||"")].join(","));
@@ -904,3 +905,4 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
