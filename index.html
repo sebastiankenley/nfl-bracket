@@ -440,11 +440,10 @@
       </ul>
 
       <h3>Tiebreaker</h3>
-      <ol>
-        <li>Closest guess to total combined points scored across all playoff games</li>
-        <li>If still tied: closest guess to Super Bowl total points</li>
-        <li>If still tied: winnings split evenly</li>
-      </ol>
+      <ul>
+      <li>Closest guess to <strong>total combined points scored across all playoff games</strong></li>
+      </ul>
+
 
     </div>
   </details>
@@ -469,7 +468,7 @@
       <details>
         <summary>If I pick one wrong team, can I still score later?</summary>
         <p>
-          Yes — as long as those later games still exist in your bracket. If your early miss changes the bracket path,
+          Yes, as long as those later games still exist in your bracket. If your early miss changes the bracket path,
           True Bracket points for those later matchups won’t apply.
         </p>
       </details>
@@ -503,8 +502,8 @@
       </details>
 
       <details>
-        <summary>How are ties handled?</summary>
-        <p>Ties are broken by total playoff points, closest person wins. 
+      <summary>How are ties handled?</summary>
+      <p>Ties are broken by total playoff points (your tiebreaker guess). Closest person wins.</p>
       </details>
 
     </div>
@@ -1180,14 +1179,10 @@ function buildPayload(){
     },
 
     sb_champ: state.sb.w ? state.sb.w.name : "",
-    tiebreaker_total_playoff_points: tiebreakerTotalInt,
-    user_agent: navigator.userAgent
-
+    tiebreaker_total_playoff_points: tiebreakerTotalInt,  // <-- after Super Bowl
     user_agent: navigator.userAgent
   };
 }
-
-
 
 document.getElementById("submitBtn").addEventListener("click", async ()=>{
   const scoreboardName = (document.getElementById("scoreboardName").value || "").trim();
@@ -1284,6 +1279,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
