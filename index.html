@@ -510,12 +510,12 @@ function celebrateChampionOnce(team){
 // }
 function confettiBurst(opts = {}) {
   const {
-    bursts = 2,          // how many bursts (1-3 is good)
+    bursts = 3,          // how many bursts (1-3 is good)
     burstGap = 140,      // ms between bursts
-    N = 220,             // particles per burst
+    N = 400,             // particles per burst
     duration = 1200,     // total ms before cleanup
     originX = 0.5,       // 0..1
-    originY = 0.30,      // 0..1
+    originY = 0.7,      // 0..1
     spread = 1.35,       // radians
     power = 1.25,        // overall velocity multiplier
     glow = true          // glow effect
@@ -1081,6 +1081,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
