@@ -387,14 +387,14 @@
 
     <div class="collapsible-content">
 
-      <h3>Bracket Submission</h3>
+     <h3>Bracket Submission</h3>
       <ul>
         <li>One (1) bracket per person.</li>
         <li>Submit picks by <strong>midnight on Friday, January 9th, 2026</strong>.</li>
         <li>Once the first Wild Card game kicks off, brackets are locked and cannot be edited.</li>
       </ul>
 
-      <h3>Scoring (True Bracket)</h3>
+      <h3>Core Scoring (True Bracket)</h3>
       <p>
         This is a <strong>true bracket challenge</strong>. You earn points only for correctly picking winners of games
         that actually occur in <em>your submitted bracket</em>.
@@ -406,18 +406,44 @@
         <li>Super Bowl Champion: <strong>8</strong> points</li>
       </ul>
 
+      <h3>Bonus Points (Keeps You In The Mix)</h3>
+
+      <h4>1) Champion Insurance</h4>
+      <ul>
+        <li>If you correctly pick the <strong>Super Bowl Champion</strong>, you earn <strong>+5 bonus points</strong>.</li>
+        <li>This bonus is awarded <strong>even if</strong> earlier incorrect picks changed your bracket’s later matchups.</li>
+      </ul>
+
+      <h4>2) Survival Bonus</h4>
+      <p>
+        If a team you advanced in your bracket reaches later rounds in real life, you can earn small bonus points
+        <strong>even if your bracket path breaks</strong>.
+      </p>
+      <ul>
+        <li>Team reaches Divisional Round: <strong>+0.5</strong></li>
+        <li>Team reaches Conference Championship: <strong>+1</strong></li>
+        <li>Team reaches Super Bowl: <strong>+2</strong></li>
+        <li>Team wins Super Bowl: <strong>+3</strong></li>
+      </ul>
+      <ul>
+        <li>Survival Bonus is awarded based on the teams you advanced in your bracket (your “intended” teams).</li>
+        <li>Each team can earn each Survival Bonus level <strong>once</strong>.</li>
+        <li>Survival Bonus is <strong>in addition</strong> to True Bracket scoring.</li>
+      </ul>
+
       <h3>Important Scoring Notes</h3>
       <ul>
-        <li>If an early-round pick is wrong, later games involving that team in your bracket won’t be scored.</li>
-        <li>No points are awarded for teams advancing outside your bracket path.</li>
+        <li>If an early-round pick is wrong, any later games involving that team in your bracket won’t be scored under True Bracket rules (those matchups no longer exist in your bracket).</li>
+        <li>No points are awarded for teams advancing outside your bracket path under True Bracket scoring.</li>
+        <li>Bonus points (Champion Insurance / Survival Bonus) exist to keep brackets competitive even when paths break.</li>
         <li>Scoring is based on official NFL playoff results.</li>
       </ul>
 
       <h3>Tiebreaker</h3>
       <ol>
         <li>Closest guess to total combined points scored across all playoff games</li>
-        <li>Closest guess to Super Bowl total points</li>
-        <li>If still tied, winnings are split evenly</li>
+        <li>If still tied: closest guess to Super Bowl total points</li>
+        <li>If still tied: winnings split evenly</li>
       </ol>
 
     </div>
@@ -429,16 +455,39 @@
   <details>
     <summary>FAQ</summary>
 
-    <div class="collapsible-content">
+ <div class="collapsible-content">
 
       <details>
         <summary>What does “true bracket” mean?</summary>
-        <p>You only score points for games that exist in your submitted bracket.</p>
+        <p>
+          You score points for correctly picking winners of games that actually occur inside your submitted bracket.
+          If you miss an early game, later matchups in your bracket may not exist anymore, and those picks won’t score
+          under True Bracket rules.
+        </p>
       </details>
 
       <details>
         <summary>If I pick one wrong team, can I still score later?</summary>
-        <p>Yes, as long as the later games still exist in your bracket.</p>
+        <p>
+          Yes — as long as those later games still exist in your bracket. If your early miss changes the bracket path,
+          True Bracket points for those later matchups won’t apply.
+        </p>
+      </details>
+
+      <details>
+        <summary>What is Champion Insurance?</summary>
+        <p>
+          If you correctly pick the Super Bowl champion, you earn <strong>+5 bonus points</strong> even if your bracket path broke earlier.
+        </p>
+      </details>
+
+      <details>
+        <summary>What is the Survival Bonus?</summary>
+        <p>
+          If a team you advanced in your bracket reaches later rounds in real life, you can still earn bonus points:
+          Divisional <strong>+0.5</strong>, Conference <strong>+1</strong>, Super Bowl <strong>+2</strong>, Champion <strong>+3</strong>.
+          Each team can earn each level once.
+        </p>
       </details>
 
       <details>
@@ -448,17 +497,14 @@
 
       <details>
         <summary>Can I edit my bracket after submitting?</summary>
-        <p>Just submit an extra bracket, and ask me to delete the original.</p>
-      </details>
-
-      <details>
-        <summary>What if someone forgets to pay?</summary>
-        <p>Entry fees must be paid before the first Wild Card game or the bracket may be removed.</p>
+        <p>
+          Just submit a new one, and send me an email to delete your old bracket from my records. After kickoff of the first Wild Card game, brackets are locked.
+        </p>
       </details>
 
       <details>
         <summary>How are ties handled?</summary>
-        <p>Ties are broken by total playoff points, then Super Bowl points. If still tied, winnings split evenly.</p>
+        <p>Ties are broken by total playoff points, closest person wins. 
       </details>
 
     </div>
@@ -1211,6 +1257,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
