@@ -428,8 +428,99 @@ function celebrateChampionOnce(team){
   lastCelebratedChamp = key;
   confettiBurst();
 }
+  //
+// function confettiBurst(){
+//   const canvas = document.createElement("canvas");
+//   const ctx = canvas.getContext("2d");
 
-function confettiBurst(){
+//   canvas.style.position = "fixed";
+//   canvas.style.left = "0";
+//   canvas.style.top = "0";
+//   canvas.style.width = "100vw";
+//   canvas.style.height = "100vh";
+//   canvas.style.pointerEvents = "none";
+//   canvas.style.zIndex = "9999";
+//   document.body.appendChild(canvas);
+
+//   const DPR = window.devicePixelRatio || 1;
+
+//   function resize(){
+//     canvas.width = Math.floor(window.innerWidth * DPR);
+//     canvas.height = Math.floor(window.innerHeight * DPR);
+//   }
+//   resize();
+
+//   const colors = ["#d50a0a", "#013369", "#ffffff", "#d4af37"]; // red, blue, white, gold
+//   const N = 160;
+//   const parts = [];
+
+//   for(let i=0;i<N;i++){
+//     const x = (window.innerWidth * 0.5 + (Math.random()-0.5) * 140) * DPR;
+//     const y = (window.innerHeight * 0.30 + (Math.random()-0.5) * 50) * DPR;
+
+//     const angle = (-Math.PI/2) + (Math.random()-0.5) * 1.2;
+//     const speed = (7 + Math.random() * 9) * DPR;
+
+//     parts.push({
+//       x, y,
+//       vx: Math.cos(angle) * speed,
+//       vy: Math.sin(angle) * speed,
+//       g: 0.28 * DPR,
+//       rot: Math.random() * Math.PI,
+//       vr: (Math.random()-0.5) * 0.35,
+//       w: (6 + Math.random()*8) * DPR,
+//       h: (3 + Math.random()*6) * DPR,
+//       c: colors[(Math.random()*colors.length)|0],
+//       life: 0,
+//       ttl: 70 + ((Math.random()*30)|0)
+//     });
+//   }
+
+//   let frames = 0;
+//   function tick(){
+//     frames++;
+//     ctx.clearRect(0,0,canvas.width,canvas.height);
+
+//     for(const p of parts){
+//       p.life++;
+//       p.vy += p.g;
+//       p.x += p.vx;
+//       p.y += p.vy;
+//       p.rot += p.vr;
+
+//       const alpha = Math.max(0, Math.min(1, 1 - (p.life / p.ttl)));
+//       ctx.globalAlpha = alpha;
+
+//       ctx.save();
+//       ctx.translate(p.x, p.y);
+//       ctx.rotate(p.rot);
+//       ctx.fillStyle = p.c;
+//       ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+//       ctx.restore();
+//     }
+
+//     ctx.globalAlpha = 1;
+
+//     if(frames < 90) requestAnimationFrame(tick);
+//     else canvas.remove();
+//   }
+
+//   window.addEventListener("resize", resize, { once: true });
+//   requestAnimationFrame(tick);
+// }
+function confettiBurst(opts = {}) {
+  const {
+    bursts = 2,          // how many bursts (1-3 is good)
+    burstGap = 140,      // ms between bursts
+    N = 220,             // particles per burst
+    duration = 1200,     // total ms before cleanup
+    originX = 0.5,       // 0..1
+    originY = 0.30,      // 0..1
+    spread = 1.35,       // radians
+    power = 1.25,        // overall velocity multiplier
+    glow = true          // glow effect
+  } = opts;
+
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
 
@@ -444,68 +535,145 @@ function confettiBurst(){
 
   const DPR = window.devicePixelRatio || 1;
 
-  function resize(){
+  function resize() {
     canvas.width = Math.floor(window.innerWidth * DPR);
     canvas.height = Math.floor(window.innerHeight * DPR);
   }
   resize();
 
-  const colors = ["#d50a0a", "#013369", "#ffffff", "#d4af37"]; // red, blue, white, gold
-  const N = 160;
+  // optional: keep it correct if the user resizes while it runs
+  window.addEventListener("resize", resize, { passive: true });
+
   const parts = [];
 
-  for(let i=0;i<N;i++){
-    const x = (window.innerWidth * 0.5 + (Math.random()-0.5) * 140) * DPR;
-    const y = (window.innerHeight * 0.30 + (Math.random()-0.5) * 50) * DPR;
+  // Bright random color generator
+  const randColor = () => {
+    const h = Math.floor(Math.random() * 360);
+    const s = 90 + Math.random() * 10;   // 90-100%
+    const l = 50 + Math.random() * 10;   // 50-60%
+    return `hsl(${h} ${s}% ${l}%)`;
+  };
 
-    const angle = (-Math.PI/2) + (Math.random()-0.5) * 1.2;
-    const speed = (7 + Math.random() * 9) * DPR;
+  const randBetween = (a, b) => a + Math.random() * (b - a);
 
-    parts.push({
-      x, y,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
-      g: 0.28 * DPR,
-      rot: Math.random() * Math.PI,
-      vr: (Math.random()-0.5) * 0.35,
-      w: (6 + Math.random()*8) * DPR,
-      h: (3 + Math.random()*6) * DPR,
-      c: colors[(Math.random()*colors.length)|0],
-      life: 0,
-      ttl: 70 + ((Math.random()*30)|0)
-    });
+  function spawnBurst(mult = 1) {
+    for (let i = 0; i < N; i++) {
+      const x = (window.innerWidth * originX + (Math.random() - 0.5) * 180) * DPR;
+      const y = (window.innerHeight * originY + (Math.random() - 0.5) * 70) * DPR;
+
+      // Launch upward with spread
+      const angle = (-Math.PI / 2) + (Math.random() - 0.5) * spread;
+      const speed = randBetween(7, 16) * DPR * power * mult;
+
+      // Shape type: 0 rect, 1 circle, 2 triangle
+      const shape = (Math.random() * 3) | 0;
+
+      // Size variation
+      const w = randBetween(5, 12) * DPR;
+      const h = randBetween(3, 10) * DPR;
+
+      parts.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        // gravity & drag
+        g: randBetween(0.22, 0.42) * DPR,
+        drag: randBetween(0.985, 0.995),
+        // rotation + flutter
+        rot: Math.random() * Math.PI * 2,
+        vr: randBetween(-0.55, 0.55),
+        flutter: randBetween(-0.18, 0.18),
+        w, h,
+        r: randBetween(3, 6) * DPR, // for circles
+        c: randColor(),
+        shape,
+        life: 0,
+        ttl: (70 + ((Math.random() * 60) | 0)) // longer life range
+      });
+    }
   }
 
-  let frames = 0;
-  function tick(){
-    frames++;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+  // burst sequence
+  spawnBurst(1);
+  for (let b = 1; b < bursts; b++) {
+    setTimeout(() => spawnBurst(randBetween(0.85, 1.15)), b * burstGap);
+  }
 
-    for(const p of parts){
+  const start = performance.now();
+
+  function drawTriangle(p) {
+    ctx.beginPath();
+    ctx.moveTo(0, -p.h / 2);
+    ctx.lineTo(p.w / 2, p.h / 2);
+    ctx.lineTo(-p.w / 2, p.h / 2);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function tick(now) {
+    const elapsed = now - start;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (glow) {
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.shadowBlur = 12 * DPR;
+      ctx.shadowColor = "rgba(255,255,255,0.35)";
+      ctx.restore();
+    }
+
+    for (const p of parts) {
       p.life++;
+
+      // physics
+      p.vx *= p.drag;
+      p.vy *= p.drag;
+
+      // flutter sideways over time (gives that "paper wobble" feel)
+      p.vx += Math.sin((p.life * 0.18)) * p.flutter * DPR;
+
       p.vy += p.g;
+
       p.x += p.vx;
       p.y += p.vy;
+
       p.rot += p.vr;
 
+      // fade out
       const alpha = Math.max(0, Math.min(1, 1 - (p.life / p.ttl)));
+      if (alpha <= 0) continue;
+
       ctx.globalAlpha = alpha;
 
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(p.rot);
       ctx.fillStyle = p.c;
-      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+
+      if (p.shape === 0) {
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      } else if (p.shape === 1) {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        drawTriangle(p);
+      }
+
       ctx.restore();
     }
 
     ctx.globalAlpha = 1;
 
-    if(frames < 90) requestAnimationFrame(tick);
-    else canvas.remove();
+    if (elapsed < duration) {
+      requestAnimationFrame(tick);
+    } else {
+      window.removeEventListener("resize", resize);
+      canvas.remove();
+    }
   }
 
-  window.addEventListener("resize", resize, { once: true });
   requestAnimationFrame(tick);
 }
 
@@ -913,6 +1081,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
