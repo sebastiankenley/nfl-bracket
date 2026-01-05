@@ -538,9 +538,25 @@
     <div class="conf" id="nfc"></div>
   </div>
 
-  <div class="superbowl-wrap">
+<div class="superbowl-wrap">
   <div class="conf" id="superBowl"></div>
 </div>
+
+<!-- Tiebreaker (after Super Bowl) -->
+<div class="form-row" style="margin-top: 12px;">
+  <div>
+    <label for="tiebreakerTotal">Tiebreaker (Total points across all playoff games)</label>
+    <input
+      id="tiebreakerTotal"
+      type="number"
+      inputmode="numeric"
+      min="0"
+      step="1"
+      placeholder="Example: 845"
+    >
+  </div>
+</div>
+
 
 
   <div class="actions">
@@ -1141,6 +1157,8 @@ function buildPayload(){
   const realName = (document.getElementById("realName").value || "").trim();
   const email = (document.getElementById("email").value || "").trim();
   const phone = (document.getElementById("phone").value || "").trim();
+  const tiebreakerTotal = (document.getElementById("tiebreakerTotal")?.value || "").trim();
+  const tiebreakerTotalInt = tiebreakerTotal === "" ? null : Number.parseInt(tiebreakerTotal, 10);
 
   return {
     scoreboard_name: scoreboardName,
@@ -1162,6 +1180,9 @@ function buildPayload(){
     },
 
     sb_champ: state.sb.w ? state.sb.w.name : "",
+    tiebreaker_total_playoff_points: tiebreakerTotalInt,
+    user_agent: navigator.userAgent
+
     user_agent: navigator.userAgent
   };
 }
@@ -1173,7 +1194,13 @@ document.getElementById("submitBtn").addEventListener("click", async ()=>{
   const realName = (document.getElementById("realName").value || "").trim();
   const email = (document.getElementById("email").value || "").trim();
   const phone = (document.getElementById("phone").value || "").trim();
+  const tiebreakerTotal = (document.getElementById("tiebreakerTotal")?.value || "").trim();
+  const tiebreakerTotalInt = Number.parseInt(tiebreakerTotal, 10);
 
+  if (tiebreakerTotal === "") return alert("Enter your tiebreaker guess (total playoff points).");
+  if (!Number.isFinite(tiebreakerTotalInt) || tiebreakerTotalInt < 0) {
+    return alert("Tiebreaker must be a non-negative whole number.");
+  }
   if (!scoreboardName) return alert("Enter your scoreboard name.");
   if (!realName) return alert("Enter your real name.");
   if (!email) return alert("Enter your email.");
@@ -1257,6 +1284,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
