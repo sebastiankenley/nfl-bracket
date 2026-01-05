@@ -371,6 +371,16 @@
 .collapsible-content ol {
   margin-left: 20px;
 }
+/* Center the tiebreaker input block */
+.tiebreaker-row {
+  justify-content: center;
+}
+
+.tiebreaker-box {
+  width: 100%;
+  max-width: 420px;   /* adjust if you want it wider */
+  text-align: left;   /* keeps label + input text left-aligned */
+}
 
 </style>
 
@@ -553,19 +563,22 @@
 </div>
 
 <!-- Tiebreaker (after Super Bowl) -->
-<div class="form-row" style="margin-top: 12px;">
-  <div>
-    <label for="tiebreakerTotal">Tiebreaker (Total points across all playoff games. Wild Card Round to Championship Round, Super Bowl EXCLUDED)</label>
+<div class="form-row tiebreaker-row" style="margin-top: 12px;">
+  <div class="tiebreaker-box">
+    <label for="tiebreakerTotal">
+      Tiebreaker (Total points across all playoff games. Wild Card Round to Championship Round, Super Bowl EXCLUDED)
+    </label>
     <input
       id="tiebreakerTotal"
       type="number"
       inputmode="numeric"
       min="0"
       step="1"
-      placeholder="Example: 845"
+      placeholder="Example: 579"
     >
   </div>
 </div>
+
 
 
 
@@ -1290,6 +1303,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
